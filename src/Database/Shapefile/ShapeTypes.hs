@@ -23,12 +23,14 @@ data ESRIShapeType
     | Unknown Word32
     deriving (Show, Read)
 
+hasZ :: ESRIShapeType -> Bool
 hasZ PointZ         = True
 hasZ PolyLineZ      = True
 hasZ PolygonZ       = True
 hasZ MultiPointZ    = True
 hasZ _              = False
 
+hasM :: ESRIShapeType -> Bool
 hasM PointM         = True
 hasM PolyLineM      = True
 hasM PolygonM       = True
@@ -81,6 +83,7 @@ instance Ord ESRIShapeType where
 identifyShapeType :: ESRIShapeType -> ESRIShapeType
 identifyShapeType = toEnum . fromEnum
 
+isKnownShapeType :: ESRIShapeType -> Bool
 isKnownShapeType t = case identifyShapeType t of
     Unknown _   -> False
     _           -> True
