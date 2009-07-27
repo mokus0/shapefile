@@ -11,10 +11,14 @@ import Control.Monad
 
 -- |offset and length of corresponding shape in 16-bit words
 data ShxRec = ShxRec
-    { shxOffset     :: Word32
-    , shxLength     :: Word32
+    { -- |Offset of the corresponding ShpRec in 16-bit words
+      shxOffset     :: Word32
+    , -- |Length of the corresponding ShpRec in 16-bit words
+      shxLength     :: Word32
     } deriving (Eq, Show)
 
+-- |Construct a 'ShxRec' given the record offset and length in bytes
+shxRecBytes :: Integer -> Integer -> ShxRec
 shxRecBytes offBytes lenBytes
     | odd offBytes      = error "shxRecBytes: odd byte offset"
     | offBytes > big    = error "shxRecBytes: offset too large for Word32"
@@ -25,14 +29,18 @@ shxRecBytes offBytes lenBytes
         big = 2 * toInteger (maxBound :: Word32)
         b2w x = fromInteger (x `div` 2)
 
+shxOffsetBytes :: ShxRec -> Integer
 shxOffsetBytes = (*2) . toInteger . shxOffset
+shxLengthBytes :: ShxRec -> Integer
 shxLengthBytes = (*2) . toInteger . shxLength
 
+putShxRec :: ShxRec -> Put
 putShxRec ShxRec {..} = do
     {- 0: Offset -}     putWord32be shxOffset
     {- 4: Length -}     putWord32be shxLength
     {- 8 bytes total -}
 
+getShxRec :: Get ShxRec
 getShxRec = do
     {- 0: Offset -}     shxOffset <- getWord32be
     {- 4: Length -}     shxLength <- getWord32be
@@ -41,6 +49,8 @@ getShxRec = do
                             , shxLength = shxLength
                             }
 
+-- |Construct an index for the provided .shp file contents
+shxFromShp :: ShpFileHeader -> [ShpRec] -> (ShpFileHeader, [ShxRec])
 shxFromShp shpHdr shpRecs = (shxHdr, shxRecs)
     where
         nRecs = genericLength shpRecs
@@ -50,10 +60,12 @@ shxFromShp shpHdr shpRecs = (shxHdr, shxRecs)
         
         mkShxRec off shp = let len = shpLen shp in (off + 4 + len, ShxRec off len)
 
+putShxFile :: ShpFileHeader -> [ShxRec] -> Put
 putShxFile shxHdr shxRecs = do
     putShpFileHeader shxHdr
     mapM_ putShxRec shxRecs
 
+getShxFile :: Get (ShpFileHeader, [ShxRec])
 getShxFile = do
     shxHdr  <- getShpFileHeader
     let nWords = shpFileLength shxHdr

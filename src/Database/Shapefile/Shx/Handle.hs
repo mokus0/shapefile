@@ -1,4 +1,7 @@
 {-# LANGUAGE RecordWildCards #-}
+-- |Primarily for use internally by 'ShpHandle'.
+-- Each 'ShpHandle' has an 'ShxHandle' that it uses to lookup arbitrary shape
+-- records from the .shp file.
 module Database.Shapefile.Shx.Handle
     ( ShxHandle
     , openShx

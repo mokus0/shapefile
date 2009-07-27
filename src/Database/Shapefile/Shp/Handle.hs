@@ -5,8 +5,8 @@ module Database.Shapefile.Shp.Handle
     , closeShp
     , shpIsOpen
     , shpHeader
-    , getShpRecord
     , shpDbfFields
+    , getShpRecord
     ) where
 
 import Database.Shapefile.Shp
@@ -86,11 +86,7 @@ shpDbfFields = dbfFields . dbfHandle
 getShpRecord :: ShpHandle -> Int -> IO (ShpRec, Maybe DbfRecHandle)
 getShpRecord shp n = do
     shxRec <- getShxRecord (shxHandle shp) n
-    rec <- readShpBlock shp (shxOffsetBytes shxRec) (fromInteger (shxLengthBytes shxRec))
+    rec <- readShpBlock shp (shxOffsetBytes shxRec) (8 + fromInteger (shxLengthBytes shxRec))
     dbfRec <- dbfGetRecord (dbfHandle shp) (toInteger n)
-    return (runGet (getShpRec >>= eof) rec, dbfRec)
-        where
-            eof rec = do
-                n <- remaining
-                when (n /= 0) (fail "SHP record does not match size indicated in SHX index")
-                return rec
+    return (runGet getShpRec rec, dbfRec)
+

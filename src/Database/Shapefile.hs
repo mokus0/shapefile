@@ -7,8 +7,10 @@ module Database.Shapefile
     , module Database.Shapefile.Shp.Handle
     , module Database.Shapefile.Shx.Handle
     , module Database.XBase.Dbf
+    , BBox(..)
     ) where
 
+import Database.Shapefile.Misc
 import Database.Shapefile.ShapeTypes
 import Database.Shapefile.Shp
 import Database.Shapefile.Shx

@@ -12,15 +12,19 @@ import Data.Maybe
 import qualified Data.ByteString.Lazy as BS
 
 data ShpFileHeader = ShpFileHeader
-    { shpFileLength         :: Word32   -- in Word16s.  unsigned, I assume - spec doesn't say
+    { -- |File length in 16-bit words.  Unsigned, I assume - spec doesn't say.
+      shpFileLength         :: Word32
     , shpFileShapeType      :: ESRIShapeType
     , shpFileBBox           :: BBox  (Double, Double)
     , shpFileZBnd           :: Maybe (Double, Double)
     , shpFileMBnd           :: Maybe (Double, Double)
     } deriving (Eq, Show)
 
+-- |Shape file length in bytes
+shpFileLengthBytes :: ShpFileHeader -> Integer
 shpFileLengthBytes = (2*) . toInteger . shpFileLength
 
+putShpFileHeader :: ShpFileHeader -> Put
 putShpFileHeader ShpFileHeader {..} = do
     {-  0: File Code -}     putWord32be 9994
     {-  4: Unused -}        putWord32be 0
@@ -36,6 +40,7 @@ putShpFileHeader ShpFileHeader {..} = do
     {- 84: M Bounds -}      putPair putFloat64le (fromMaybe (0,0) shpFileMBnd)
     {- 100 bytes total -}
 
+getShpFileHeader :: Get ShpFileHeader
 getShpFileHeader = do
     {-  0: File Code -}     getWord32be `expecting` 9994
     {-  4: Unused -}        getWord32be `expecting` 0
@@ -67,16 +72,22 @@ getShpFileHeader = do
 
 
 data ShpRecHeader = ShpRecHeader
-    { shpRecNum             :: Word32
-    , shpRecSize            :: Word32
+    { -- |Index of the record.  First index is 1.
+      shpRecNum             :: Word32
+    , -- |Size of the record in 16-bit words, excluding this header.
+      shpRecSize            :: Word32
     } deriving (Eq, Show)
 
+-- |Size of the record in bytes, excluding the record header
+shpRecSizeBytes :: ShpRecHeader -> Integer
 shpRecSizeBytes = (*2) . toInteger . shpRecSize
 
+putShpRecHeader :: ShpRecHeader -> Put
 putShpRecHeader ShpRecHeader {..} = do
     {- 0 : Record Number -}     putWord32be shpRecNum
     {- 4 : Content Length -}    putWord32be shpRecSize
 
+getShpRecHeader :: Get ShpRecHeader
 getShpRecHeader = do
     {- 0 : Record Number -}     shpRecNum  <- getWord32be
     {- 4 : Content Length -}    shpRecSize <- getWord32be
@@ -90,17 +101,24 @@ data ShpRec = ShpRec
     , shpRecData            :: BS.ByteString
     } deriving (Eq, Show)
 
+-- |Total size of the shape record in bytes, including the header
+shpRecTotalSizeBytes :: ShpRec -> Integer
 shpRecTotalSizeBytes = (8 +) . shpRecSizeBytes . shpRecHdr
 
--- NB: it isn't "part of" the header, but every shape format starts with
--- a word indicating the shape type.
+-- |A shape record type isn't "part of" the header, but every shape format starts with
+-- a word indicating the shape type.  This function extracts it.
+shpRecShapeType :: ShpRec -> ESRIShapeType
 shpRecShapeType ShpRec{..}
     | BS.length shpRecData < 4  = NullShape
     | otherwise = runGet getShapeType32le shpRecData
     
+-- |Pack several raw shape records into 'ShpRec's, setting proper record numbers
+-- and sizes.
+mkShpRecs :: [BS.ByteString] -> [ShpRec]
+mkShpRecs recData = zipWith mkShpRec [1..] recData
 
-mkShpRecs recData = zipWith mkShpRec [0..] recData
-
+-- |Pack the data for a shape into a 'ShpRec' with the specified record number
+mkShpRec :: Word32 -> BS.ByteString -> ShpRec
 mkShpRec n recData = ShpRec (ShpRecHeader n (bsLength recData)) recData
     where
         bsLength bs = case fromIntegral len `divMod` 2 of
@@ -108,11 +126,13 @@ mkShpRec n recData = ShpRec (ShpRecHeader n (bsLength recData)) recData
             (words, _) -> error ("uneven length shape record (" ++ show len ++ " bytes)")
             where len = BS.length bs
 
+putShpRec :: ShpRec -> Put
 putShpRec ShpRec {..} = do
     {- 0 : Record Header -}  putShpRecHeader shpRecHdr
     {- 8 : Record content -} putLazyByteString shpRecData
     {- (8 + BS.length shpRecData) bytes total -}
 
+getShpRec :: Get ShpRec
 getShpRec = do
     {- 0 : Record Header -}     shpRecHdr@ShpRecHeader {shpRecSize = len} <- getShpRecHeader
     {- 8 : Record content -}    shpRecData <- getLazyByteString (2 * fromIntegral len)
@@ -121,10 +141,12 @@ getShpRec = do
                                     , shpRecData = shpRecData
                                     }
 
+putShpFile :: ShpFileHeader -> [ShpRec] -> Put
 putShpFile shpHdr shpRecs = do
     putShpFileHeader shpHdr
     mapM_ putShpRec shpRecs
 
+getShpFile :: Get (ShpFileHeader, [ShpRec])
 getShpFile = do
     hdr <- getShpFileHeader
     rest <- getLazyByteString (fromInteger (shpFileLengthBytes hdr) - 100)
