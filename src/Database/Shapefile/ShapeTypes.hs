@@ -8,9 +8,9 @@ import Data.Function (on)
 data ESRIShapeType
     = NullShape
     | Point
+    | MultiPoint
     | PolyLine
     | Polygon
-    | MultiPoint
     | PointZ
     | PolyLineZ
     | PolygonZ

@@ -1,5 +1,5 @@
 name:                   shapefile
-version:                0.0.0.1
+version:                0.0.0.2
 stability:              experimental
 
 cabal-version:          >= 1.2
@@ -22,6 +22,12 @@ description:            A very simple interface for processing data in ESRI
 Library
   hs-source-dirs:       src
   exposed-modules:      Database.Shapefile
+                        Database.Shapefile.Shapes
+                        Database.Shapefile.Shapes.Class
+                        Database.Shapefile.Shapes.MultiPoint
+                        Database.Shapefile.Shapes.Null
+                        Database.Shapefile.Shapes.Point
+                        Database.Shapefile.Shapes.Poly
                         Database.Shapefile.ShapeTypes
                         Database.Shapefile.Shp
                         Database.Shapefile.Shp.Handle

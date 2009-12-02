@@ -1,7 +1,7 @@
 {-# LANGUAGE RecordWildCards #-}
 module Database.Shapefile 
     ( module Database.Shapefile
-    , module Database.Shapefile.ShapeTypes
+    , module Database.Shapefile.Shapes
     , module Database.Shapefile.Shp
     , module Database.Shapefile.Shx
     , module Database.Shapefile.Shp.Handle
@@ -11,7 +11,7 @@ module Database.Shapefile
     ) where
 
 import Database.Shapefile.Misc
-import Database.Shapefile.ShapeTypes
+import Database.Shapefile.Shapes
 import Database.Shapefile.Shp
 import Database.Shapefile.Shx
 import Database.Shapefile.Shp.Handle

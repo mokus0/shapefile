@@ -32,6 +32,12 @@ getBBox getPoint = do
     bbMax <- getPoint
     return (BBox bbMin bbMax)
 
+zipBBoxWith f (BBox min1 max1) (BBox min2 max2) = BBox (f min1 min2) (f max1 max2)
+unzipBBoxWith f (BBox min max) = (BBox min1 max1, BBox min2 max2)
+    where
+        (min1, min2) = f min
+        (max1, max2) = f max
+
 data BBox point = BBox
     { bbMin :: point
     , bbMax :: point
