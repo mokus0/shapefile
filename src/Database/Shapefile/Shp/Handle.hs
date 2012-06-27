@@ -1,14 +1,16 @@
 {-# LANGUAGE RecordWildCards #-}
 module Database.Shapefile.Shp.Handle
-    ( ShpHandle
+    ( ShpHandle (..)
     , openShp
     , closeShp
     , shpIsOpen
     , shpHeader
     , shpDbfFields
-    , getShpRecord
+    , getShpRecCnt
+    , readShpBlock
     ) where
 
+import Data.Word			(Word32)
 import Database.Shapefile.Shp
 import Database.Shapefile.Shx
 import Database.Shapefile.Shx.Handle
@@ -20,6 +22,8 @@ import Control.Monad
 import Control.Concurrent.RWLock
 import qualified Data.ByteString.Lazy as BS
 import Data.Binary.Get
+
+import Database.Shapefile.Misc		(divExactIO)
 
 data ShpHandle = ShpHandle
     { shpReadOnly   :: Bool
@@ -83,10 +87,10 @@ shpHeader shp = do
 shpDbfFields :: ShpHandle -> IO [DbfFieldHandle]
 shpDbfFields = dbfFields . dbfHandle
 
-getShpRecord :: ShpHandle -> Int -> IO (ShpRec, Maybe DbfRecHandle)
-getShpRecord shp n = do
-    shxRec <- getShxRecord (shxHandle shp) n
-    rec <- readShpBlock shp (shxOffsetBytes shxRec) (8 + fromInteger (shxLengthBytes shxRec))
-    dbfRec <- dbfGetRecord (dbfHandle shp) (toInteger n)
-    return (runGet getShpRec rec, dbfRec)
-
+-- | The the number of shape records in the file (specified by the
+--   'ShpHandle'), according to the associated '.shx' file.
+getShpRecCnt :: ShpHandle -> IO Integer
+getShpRecCnt shp = do
+    shxHdr <- shxHeader (shxHandle shp)
+    res <- ((shpFileLength shxHdr) - 50) `divExactIO` 4
+    return $ toInteger res

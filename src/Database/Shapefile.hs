@@ -12,6 +12,8 @@ module Database.Shapefile
 
 import Database.Shapefile.Misc
 import Database.Shapefile.ShapeTypes
+import Database.Shapefile.Shapes.MultiPatchPartTypes
+import Database.Shapefile.Shapes.OneToOne
 import Database.Shapefile.Shp
 import Database.Shapefile.Shx
 import Database.Shapefile.Shp.Handle
@@ -23,16 +25,3 @@ import Data.Binary.Put
 
 import qualified Data.ByteString.Lazy as BS
 
-readShpFile path = do
-    file <- BS.readFile path
-    return (runGet getShpFile file)
-
-writeShpFile path shp = do
-    BS.writeFile path (runPut (uncurry putShpFile shp))
-
-readShxFile path = do
-    file <- BS.readFile path
-    return (runGet getShxFile file)
-
-writeShxFile path shx = do
-    BS.writeFile path (runPut (uncurry putShxFile shx))

@@ -6,6 +6,7 @@ import Database.Shapefile.Shp
 import Data.Word
 import Data.Binary.Get
 import Data.Binary.Put
+import qualified Data.ByteString.Lazy as BS
 import Data.List
 import Control.Monad
 
@@ -50,15 +51,16 @@ getShxRec = do
                             }
 
 -- |Construct an index for the provided .shp file contents
-shxFromShp :: ShpFileHeader -> [ShpRec] -> (ShpFileHeader, [ShxRec])
+shxFromShp :: ShpRecord r => ShpFileHeader -> [r] -> (ShpFileHeader, [ShxRec])
 shxFromShp shpHdr shpRecs = (shxHdr, shxRecs)
     where
         nRecs = genericLength shpRecs
         shxHdr = shpHdr { shpFileLength = 50 + nRecs * 4}
         (shpFileLen, shxRecs) = mapAccumL mkShxRec 50 shpRecs
-        shpLen = shpRecSize . shpRecHdr
+        shpLen = shpRecSize . shpRecHeader
         
-        mkShxRec off shp = let len = shpLen shp in (off + 4 + len, ShxRec off len)
+        mkShxRec off shp = let len = shpLen shp
+			   in (off + 4 + len, ShxRec off len)
 
 putShxFile :: ShpFileHeader -> [ShxRec] -> Put
 putShxFile shxHdr shxRecs = do
@@ -76,3 +78,10 @@ getShxFile = do
     nRecs <- (nWords - 50) `divExact` 4
     shxRecs <- replicateM (fromIntegral nRecs) getShxRec
     return (shxHdr, shxRecs)
+
+readShxFile path = do
+    file <- BS.readFile path
+    return (runGet getShxFile file)
+
+writeShxFile path shx = do
+    BS.writeFile path (runPut (uncurry putShxFile shx))

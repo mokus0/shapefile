@@ -4,6 +4,12 @@ module Database.Shapefile.Misc where
 import Data.Binary
 import Data.Binary.Get
 
+divExactIO :: (Integral a, Show a) => a -> a -> IO a
+divExactIO p q = case p `divMod` q of
+		(d, 0) -> return d
+		_      -> fail $ (show p) ++ " is not exactly divisible by " ++
+				(show q)
+
 expecting :: (Eq t, Show t) => Get t -> t -> Get ()
 get `expecting` result = do
     off <- bytesRead
@@ -35,5 +41,9 @@ getBBox getPoint = do
 data BBox point = BBox
     { bbMin :: point
     , bbMax :: point
-    } deriving (Eq, Show)
+    } deriving (Eq, Show, Read)
 
+--data ValueRange point = MRange
+--    { vrMin :: point
+--    , vrMax :: point
+--    } deriving (Eq, Show, Read)
