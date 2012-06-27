@@ -1,7 +1,7 @@
 {-# LANGUAGE MultiParamTypeClasses, TypeFamilies #-}
 module Database.Shapefile.Shapes.MultiPatchPartTypes where
 
-import Control.Monad			(liftM)
+import Control.Monad                    (liftM)
 import Data.Binary.Get
 import Data.Binary.Put
 import qualified Data.Vector.Generic as G
@@ -9,7 +9,7 @@ import qualified Data.Vector.Generic.Mutable as M
 import qualified Data.Vector.Primitive as P
 import qualified Data.Vector.Unboxed as U
 import Data.Word
-import Data.Function			(on)
+import Data.Function                    (on)
 
 data MultiPatchPartType
     = TriangleStrip
@@ -22,9 +22,9 @@ data MultiPatchPartType
     deriving (Show, Read)
 
 hasArea :: MultiPatchPartType -> Bool
-hasArea TriangleStrip	= True
-hasArea TriangleFan	= True
-hasArea _		= False
+hasArea TriangleStrip   = True
+hasArea TriangleFan     = True
+hasArea _               = False
 
 instance Enum MultiPatchPartType where
     toEnum 0    = TriangleStrip
@@ -69,12 +69,12 @@ getPartType32le = fmap (toEnum . fromIntegral) getWord32le
 
 -- ---------------------------------------------
 -- Instance of Unboxed for use with Data.Vector:
--- 	like in <http://hackage.haskell.org/packages/archive/vector/0.9.1/doc/html/src/Data-Vector-Unboxed-Base.html>
+--      like in <http://hackage.haskell.org/packages/archive/vector/0.9.1/doc/html/src/Data-Vector-Unboxed-Base.html>
 -- --------------------------------------------
 newtype instance U.MVector s MultiPatchPartType =
-	MV_MultiPatchPartType (P.MVector s Word8)
+        MV_MultiPatchPartType (P.MVector s Word8)
 newtype instance U.Vector    MultiPatchPartType =
-	V_MultiPatchPartType  (P.Vector    Word8)
+        V_MultiPatchPartType  (P.Vector    Word8)
 
 instance U.Unbox MultiPatchPartType
 
@@ -92,25 +92,25 @@ instance M.MVector U.MVector MultiPatchPartType where
     {-# INLINE basicUnsafeGrow #-}
     basicLength (MV_MultiPatchPartType v) = M.basicLength v
     basicUnsafeSlice i n (MV_MultiPatchPartType v) =
-    	MV_MultiPatchPartType $ M.basicUnsafeSlice i n v
+        MV_MultiPatchPartType $ M.basicUnsafeSlice i n v
     basicOverlaps (MV_MultiPatchPartType v1) (MV_MultiPatchPartType v2) =
-    	M.basicOverlaps v1 v2
+        M.basicOverlaps v1 v2
     basicUnsafeNew n = MV_MultiPatchPartType `liftM` M.basicUnsafeNew n
     basicUnsafeReplicate n x = MV_MultiPatchPartType `liftM`
-    	M.basicUnsafeReplicate n (fromIntegral $ fromEnum x)
+        M.basicUnsafeReplicate n (fromIntegral $ fromEnum x)
     basicUnsafeRead (MV_MultiPatchPartType v) i =
-    	(toEnum . fromIntegral) `liftM` M.basicUnsafeRead v i
+        (toEnum . fromIntegral) `liftM` M.basicUnsafeRead v i
     basicUnsafeWrite (MV_MultiPatchPartType v) i x =
-    	M.basicUnsafeWrite v i (fromIntegral $ fromEnum x)
+        M.basicUnsafeWrite v i (fromIntegral $ fromEnum x)
     basicClear (MV_MultiPatchPartType v) = M.basicClear v
     basicSet (MV_MultiPatchPartType v) x = M.basicSet v
-    	(fromIntegral $ fromEnum x)
+        (fromIntegral $ fromEnum x)
     basicUnsafeCopy (MV_MultiPatchPartType v1) (MV_MultiPatchPartType v2) =
-    	M.basicUnsafeCopy v1 v2
+        M.basicUnsafeCopy v1 v2
     basicUnsafeMove (MV_MultiPatchPartType v1) (MV_MultiPatchPartType v2) =
-    	M.basicUnsafeMove v1 v2
+        M.basicUnsafeMove v1 v2
     basicUnsafeGrow (MV_MultiPatchPartType v) n =
-    	MV_MultiPatchPartType `liftM` M.basicUnsafeGrow v n
+        MV_MultiPatchPartType `liftM` M.basicUnsafeGrow v n
 
 instance G.Vector U.Vector MultiPatchPartType where
     {-# INLINE basicUnsafeFreeze #-}
@@ -120,14 +120,14 @@ instance G.Vector U.Vector MultiPatchPartType where
     {-# INLINE basicUnsafeIndexM #-}
     {-# INLINE elemseq #-}
     basicUnsafeFreeze (MV_MultiPatchPartType v) =
-    	V_MultiPatchPartType `liftM` G.basicUnsafeFreeze v
+        V_MultiPatchPartType `liftM` G.basicUnsafeFreeze v
     basicUnsafeThaw (V_MultiPatchPartType v) =
-    	MV_MultiPatchPartType `liftM` G.basicUnsafeThaw v
+        MV_MultiPatchPartType `liftM` G.basicUnsafeThaw v
     basicLength (V_MultiPatchPartType v) = G.basicLength v
     basicUnsafeSlice i n (V_MultiPatchPartType v) =
-    	V_MultiPatchPartType $ G.basicUnsafeSlice i n v
+        V_MultiPatchPartType $ G.basicUnsafeSlice i n v
     basicUnsafeIndexM (V_MultiPatchPartType v) i =
-    	(toEnum . fromIntegral) `liftM` G.basicUnsafeIndexM v i
+        (toEnum . fromIntegral) `liftM` G.basicUnsafeIndexM v i
     basicUnsafeCopy (MV_MultiPatchPartType mv) (V_MultiPatchPartType v) =
-    	G.basicUnsafeCopy mv v
+        G.basicUnsafeCopy mv v
     elemseq _ = seq

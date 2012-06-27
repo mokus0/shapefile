@@ -60,7 +60,7 @@ shxFromShp shpHdr shpRecs = (shxHdr, shxRecs)
         shpLen = shpRecSize . shpRecHeader
         
         mkShxRec off shp = let len = shpLen shp
-			   in (off + 4 + len, ShxRec off len)
+                           in (off + 4 + len, ShxRec off len)
 
 putShxFile :: ShpFileHeader -> [ShxRec] -> Put
 putShxFile shxHdr shxRecs = do

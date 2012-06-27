@@ -2,26 +2,26 @@
 
 module Database.Shapefile.Shp.OneToOne where
 
-import Database.Shapefile.ShapeTypes	(ESRIShapeType, getShapeType32le)
+import Database.Shapefile.ShapeTypes    (ESRIShapeType, getShapeType32le)
 import Database.Shapefile.Shapes.OneToOne
-		(ESRIShape, getShape, putShape, shapeType, contentLengthWords)
-import Database.Shapefile.Shp		(ShpFileHeader (..), ShpRecHeader (..),
-		ShpRecord (..), shpFileLengthBytes, shpRecSizeBytes,
-		getShpRecHeader, putShpRecHeader, getShpFileHeader,
-		putShpFileHeader)
-import Database.Shapefile.Shp.Handle	(ShpHandle (..), readShpBlock)
-import Database.Shapefile.Shx		(shxLengthBytes, shxOffsetBytes)
-import Database.Shapefile.Shx.Handle	(getShxRecord)
+                (ESRIShape, getShape, putShape, shapeType, contentLengthWords)
+import Database.Shapefile.Shp           (ShpFileHeader (..), ShpRecHeader (..),
+                ShpRecord (..), shpFileLengthBytes, shpRecSizeBytes,
+                getShpRecHeader, putShpRecHeader, getShpFileHeader,
+                putShpFileHeader)
+import Database.Shapefile.Shp.Handle    (ShpHandle (..), readShpBlock)
+import Database.Shapefile.Shx           (shxLengthBytes, shxOffsetBytes)
+import Database.Shapefile.Shx.Handle    (getShxRecord)
 
-import Data.Binary.Get			(Get, getLazyByteString,
-		getRemainingLazyByteString, runGet)
-import Data.Binary.Put			(Put, runPut)
-import Data.Word			(Word32)
-import Database.XBase.Dbf.Handle	(DbfRecHandle, dbfGetRecord)
+import Data.Binary.Get                  (Get, getLazyByteString,
+                getRemainingLazyByteString, runGet)
+import Data.Binary.Put                  (Put, runPut)
+import Data.Word                        (Word32)
+import Database.XBase.Dbf.Handle        (DbfRecHandle, dbfGetRecord)
 
 data ShpRec = ShpRec
-    { shpRecHdr		:: ShpRecHeader
-    , shpRecShape	:: ESRIShape
+    { shpRecHdr         :: ShpRecHeader
+    , shpRecShape       :: ESRIShape
     } deriving (Eq, Show)
 
 instance ShpRecord ShpRec where
@@ -42,7 +42,7 @@ mkShpRecs shapes = zipWith mkShpRec [1..] shapes
 -- |Pack the data for a shape into a 'ShpRec' with the specified record number
 mkShpRec :: Word32 -> ESRIShape -> ShpRec
 mkShpRec n shape =
-	ShpRec (ShpRecHeader n (fromIntegral $ contentLengthWords shape)) shape
+        ShpRec (ShpRecHeader n (fromIntegral $ contentLengthWords shape)) shape
 
 putShpRec :: ShpRec -> Put
 putShpRec ShpRec {..} = do

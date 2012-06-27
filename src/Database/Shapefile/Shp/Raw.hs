@@ -2,22 +2,22 @@
 
 module Database.Shapefile.Shp.Raw where
 
-import Database.Shapefile.ShapeTypes	(ESRIShapeType, getShapeType32le)
+import Database.Shapefile.ShapeTypes    (ESRIShapeType, getShapeType32le)
 import qualified Database.Shapefile.ShapeTypes as ShpT
-import Database.Shapefile.Shp		(ShpFileHeader (..), ShpRecHeader (..),
-		ShpRecord (..), shpFileLengthBytes, shpRecSizeBytes,
-		getShpRecHeader, putShpRecHeader, getShpFileHeader,
-		putShpFileHeader)
-import Database.Shapefile.Shp.Handle	(ShpHandle (..), readShpBlock)
-import Database.Shapefile.Shx		(shxLengthBytes, shxOffsetBytes)
-import Database.Shapefile.Shx.Handle	(getShxRecord)
+import Database.Shapefile.Shp           (ShpFileHeader (..), ShpRecHeader (..),
+                ShpRecord (..), shpFileLengthBytes, shpRecSizeBytes,
+                getShpRecHeader, putShpRecHeader, getShpFileHeader,
+                putShpFileHeader)
+import Database.Shapefile.Shp.Handle    (ShpHandle (..), readShpBlock)
+import Database.Shapefile.Shx           (shxLengthBytes, shxOffsetBytes)
+import Database.Shapefile.Shx.Handle    (getShxRecord)
 
-import Data.Binary.Get			(Get, getLazyByteString,
-		getRemainingLazyByteString, runGet)
-import Data.Binary.Put			(Put, putLazyByteString, runPut)
+import Data.Binary.Get                  (Get, getLazyByteString,
+                getRemainingLazyByteString, runGet)
+import Data.Binary.Put                  (Put, putLazyByteString, runPut)
 import qualified Data.ByteString.Lazy as BS
-import Data.Word			(Word32)
-import Database.XBase.Dbf.Handle	(DbfRecHandle, dbfGetRecord)
+import Data.Word                        (Word32)
+import Database.XBase.Dbf.Handle        (DbfRecHandle, dbfGetRecord)
 
 
 data ShpRec = ShpRec
@@ -104,6 +104,6 @@ getShpRecord :: ShpHandle -> Int -> IO (ShpRec, Maybe DbfRecHandle)
 getShpRecord shp n = do
     shxRec <- getShxRecord (shxHandle shp) n
     rec <- readShpBlock shp (shxOffsetBytes shxRec)
-    		(8 + fromInteger (shxLengthBytes shxRec))
+                (8 + fromInteger (shxLengthBytes shxRec))
     dbfRec <- dbfGetRecord (dbfHandle shp) (toInteger n)
     return (runGet getShpRec rec, dbfRec)

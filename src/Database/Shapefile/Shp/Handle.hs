@@ -10,7 +10,7 @@ module Database.Shapefile.Shp.Handle
     , readShpBlock
     ) where
 
-import Data.Word			(Word32)
+import Data.Word                        (Word32)
 import Database.Shapefile.Shp
 import Database.Shapefile.Shx
 import Database.Shapefile.Shx.Handle
@@ -23,7 +23,7 @@ import Control.Concurrent.RWLock
 import qualified Data.ByteString.Lazy as BS
 import Data.Binary.Get
 
-import Database.Shapefile.Misc		(divExactIO)
+import Database.Shapefile.Misc          (divExactIO)
 
 data ShpHandle = ShpHandle
     { shpReadOnly   :: Bool

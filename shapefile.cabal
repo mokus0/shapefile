@@ -18,9 +18,9 @@ description:            A very simple interface for processing data in ESRI
                         generating .shx index files from .shp data files.
                         Also includes an interface to read individual records
                         on-demand from shapefiles, useful for very large databases.
-			
-			June 8, 2012: Patched by Pavel Penev <pavpen@gmail.com>
-			to implement parsing of the actual shapes in the file.
+                        
+                        June 8, 2012: Patched by Pavel Penev <pavpen@gmail.com>
+                        to implement parsing of the actual shapes in the file.
 
 Library
   hs-source-dirs:       src

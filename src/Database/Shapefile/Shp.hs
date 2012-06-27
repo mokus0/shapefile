@@ -1,8 +1,8 @@
 {-# LANGUAGE RecordWildCards #-}
 module Database.Shapefile.Shp where
 
-import Database.Shapefile.ShapeTypes	(ESRIShapeType, getShapeType32le,
-		putShapeType32le, hasM, hasZ)
+import Database.Shapefile.ShapeTypes    (ESRIShapeType, getShapeType32le,
+                putShapeType32le, hasM, hasZ)
 import Database.Shapefile.Misc
 
 import Data.Binary.Get
