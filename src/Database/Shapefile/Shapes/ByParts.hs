@@ -44,12 +44,12 @@ bShapeType (Point v)                    = pointType v
 bShapeType (MultiPoint {points=v})      = vecMultiPointType v
 bShapeType (PolyLine {parts=v})         = vecVecPolyLineType v
 bShapeType (Polygon {parts=v})          = vecVecPolygonType v
-bShapeType (MultiPatch _ _)             = ShpT.MultiPatch
+bShapeType MultiPatch {}                = ShpT.MultiPatch
 
 bShapePartCnt :: Point p => ESRIBaseShape p -> Int
 bShapePartCnt NullShape                 = 0
-bShapePartCnt (Point _)                 = 1
-bShapePartCnt (MultiPoint _ _)          = 1
+bShapePartCnt Point {}                  = 1
+bShapePartCnt MultiPoint {}             = 1
 bShapePartCnt (PolyLine {parts=p})      = V.length p
 bShapePartCnt (Polygon {parts=p})       = V.length p
 bShapePartCnt (MultiPatch {pParts=p})   = V.length p

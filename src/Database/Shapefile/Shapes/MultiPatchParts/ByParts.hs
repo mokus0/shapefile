@@ -24,12 +24,12 @@ data Point p => MultiPatchPart p
         deriving (Eq, Show)
 
 partType :: Point p => MultiPatchPart p -> MultiPatchPartType
-partType (TriangleStrip _)      = MPPT.TriangleStrip
-partType (TriangleFan _)        = MPPT.TriangleFan
-partType (OuterRing _)          = MPPT.OuterRing
-partType (InnerRing _)          = MPPT.InnerRing
-partType (FirstRing _)          = MPPT.FirstRing
-partType (Ring _)               = MPPT.Ring
+partType TriangleStrip {}       = MPPT.TriangleStrip
+partType TriangleFan {}         = MPPT.TriangleFan
+partType OuterRing {}           = MPPT.OuterRing
+partType InnerRing {}           = MPPT.InnerRing
+partType FirstRing {}           = MPPT.FirstRing
+partType Ring {}                = MPPT.Ring
 
 partConstr :: Point p => MultiPatchPartType -> (Vector p -> MultiPatchPart p)
 partConstr MPPT.TriangleStrip   = TriangleStrip

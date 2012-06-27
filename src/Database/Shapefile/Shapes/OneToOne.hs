@@ -95,36 +95,36 @@ data ESRIShape
 --                         , len :: Int }
 
 shapeType :: ESRIShape -> ShpT.ESRIShapeType
-shapeType NullShape                             = ShpT.NullShape
-shapeType (Point _)                             = ShpT.Point
-shapeType (MultiPoint _ _ _)                    = ShpT.MultiPoint
-shapeType (PolyLine _ _ _ _ _)                  = ShpT.PolyLine
-shapeType (Polygon _ _ _ _ _)                   = ShpT.Polygon
-shapeType (PointM _ _)                          = ShpT.PointM
-shapeType (MultiPointM _ _ _ _ _)               = ShpT.MultiPointM
-shapeType (PolyLineM _ _ _ _ _ _ _)             = ShpT.PolyLineM
-shapeType (PolygonM _ _ _ _ _ _ _)              = ShpT.PolygonM
-shapeType (PointZ _ _ _)                        = ShpT.PointZ
-shapeType (MultiPointZ _ _ _ _ _ _ _)           = ShpT.MultiPointZ
-shapeType (PolyLineZ _ _ _ _ _ _ _ _ _)         = ShpT.PolyLineZ
-shapeType (PolygonZ _ _ _ _ _ _ _ _ _)          = ShpT.PolygonZ
-shapeType (MultiPatch _ _ _ _ _ _ _ _ _ _)      = ShpT.MultiPatch
+shapeType NullShape{}   = ShpT.NullShape
+shapeType Point{}       = ShpT.Point
+shapeType MultiPoint{}  = ShpT.MultiPoint
+shapeType PolyLine{}    = ShpT.PolyLine
+shapeType Polygon{}     = ShpT.Polygon
+shapeType PointM{}      = ShpT.PointM
+shapeType MultiPointM{} = ShpT.MultiPointM
+shapeType PolyLineM{}   = ShpT.PolyLineM
+shapeType PolygonM{}    = ShpT.PolygonM
+shapeType PointZ{}      = ShpT.PointZ
+shapeType MultiPointZ{} = ShpT.MultiPointZ
+shapeType PolyLineZ{}   = ShpT.PolyLineZ
+shapeType PolygonZ{}    = ShpT.PolygonZ
+shapeType MultiPatch{}  = ShpT.MultiPatch
 
 contentLengthWords :: ESRIShape -> Int
 contentLengthWords NullShape                    = 2
-contentLengthWords (Point _)                    = 10
+contentLengthWords Point {}                     = 10
 contentLengthWords MultiPoint {numPoints=ptCnt} = 20 + 8 * ptCnt
 contentLengthWords PolyLine {numParts=partCnt, numPoints=ptCnt} =
         22 + 2 * partCnt + 8 * ptCnt
 contentLengthWords Polygon {numParts=partCnt, numPoints=ptCnt} =
         22 + 2 * partCnt + 8 * ptCnt
-contentLengthWords (PointM _ _)                 = 14
+contentLengthWords PointM {}                    = 14
 contentLengthWords MultiPointM {numPoints=ptCnt} = 28 + 12 * ptCnt
 contentLengthWords PolyLineM {numParts=partCnt, numPoints=ptCnt} =
         30 + 2 * partCnt + 12 * ptCnt
 contentLengthWords PolygonM {numParts=partCnt, numPoints=ptCnt} =
         30 + 2 * partCnt + 12 * ptCnt
-contentLengthWords (PointZ _ _ _)               = 18
+contentLengthWords PointZ {}                    = 18
 contentLengthWords MultiPointZ {numPoints=ptCnt} = 36 + 16 * ptCnt
 contentLengthWords PolyLineZ {numParts=partCnt, numPoints=ptCnt} =
         38 + 2 * partCnt + 16 * ptCnt
