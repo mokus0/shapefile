@@ -8,7 +8,6 @@ build-type:             Simple
 author:                 James Cook <mokus@deepbondi.net>
 maintainer:             James Cook <mokus@deepbondi.net>
 license:                PublicDomain
-homepage:               http://code.haskell.org/~mokus/shapefile
 
 category:               Database
 synopsis:               Parser and related tools for ESRI shapefile format
@@ -21,6 +20,10 @@ description:            A very simple interface for processing data in ESRI
                         
                         June 8, 2012: Patched by Pavel Penev <pavpen@gmail.com>
                         to implement parsing of the actual shapes in the file.
+
+source-repository head
+  type:                 git
+  location:             https://github.com/mokus0/shapefile.git
 
 Library
   hs-source-dirs:       src
